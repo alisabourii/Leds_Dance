@@ -1,0 +1,59 @@
+#include <MPU6050_tockn.h>
+#include <Wire.h>
+
+MPU6050 mpu6050(Wire);
+long timer = 0;
+
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+  mpu6050.begin();
+  mpu6050.calcGyroOffsets(true);
+  for(int i=3; i<=8; i++)
+    pinMode(i, OUTPUT);
+
+  for(int i=3; i<=8; i++)
+ {
+   digitalWrite(i, HIGH);
+   delay(200);
+   digitalWrite(i, LOW);
+   delay(100);
+ }
+}
+
+void loop() {
+  mpu6050.update();
+  if(millis() - timer > 1000){
+      int aci = mpu6050.getAngleX();
+      Serial.println(aci);
+
+       if(aci > 0)
+        Kontrol_led(6);
+      if(aci > 15)
+        Kontrol_led(7);
+      if(aci > 25)
+        Kontrol_led(8);
+
+      if(aci < - 7)
+        Kontrol_led(3);
+      if(aci < - 15)
+        Kontrol_led(4);
+      if(aci < - 25)
+        Kontrol_led(5);
+   
+      timer = millis();
+  }
+}
+
+void Kontrol_led(int ls){
+  for(int i=3; i<=8; i++)
+ {
+   digitalWrite(i,0);
+ }
+
+ for(int i=3; i<=ls; i++)
+ {
+   digitalWrite(i,1);
+ }
+}
